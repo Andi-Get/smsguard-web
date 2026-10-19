@@ -14,8 +14,6 @@
   /* SMSGuard brand palette (base #7caa4b) */
   --color-brand: #7caa4b;
   --color-brand-50: #f5faf0;
-  --color-brand-100: #e8f2dd;
-  --color-brand-200: #d3e6bd;
   --color-brand-400: #9cc271;
   --color-brand-600: #6a973f;
   --color-brand-700: #4f7330;
@@ -36,13 +34,4 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
-}
-
-/* Flat diagonal hatch used as texture instead of soft blurs */
-.hatch {
-  background-image: repeating-linear-gradient(
-    -45deg,
-    rgba(22, 32, 15, 0.09) 0 1px,
-    transparent 1px 9px
-  );
 }
