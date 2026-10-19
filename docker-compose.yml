@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: smsguard-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: smsguard
+      POSTGRES_PASSWORD: smsguard
+      POSTGRES_DB: smsguard
+    ports:
+      - "5432:5432"
+    volumes:
+      - smsguard-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U smsguard -d smsguard"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  smsguard-db:
