@@ -43,7 +43,7 @@ export function OAuthButtons() {
     try {
       const { error: authError } = await authClient.signIn.social({
         provider,
-        callbackURL: "/",
+        callbackURL: "/dashboard",
       });
 
       if (authError) {

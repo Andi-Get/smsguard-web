@@ -1,9 +1,22 @@
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
 import { GitHubMark, Logo, StarIcon } from "./_components/brand";
 import { OAuthButtons } from "./_components/oauth-buttons";
 
 const REPO = "https://github.com/smsguard-org/smsguard";
 
-export default function Home() {
+// The session check reads request headers, so this route blocks until it can
+// resolve them instead of prerendering a static shell.
+export const instant = false;
+
+export default async function Home() {
+  const session = await auth.api.getSession({ headers: await headers() });
+
+  if (session) {
+    redirect("/dashboard");
+  }
+
   return (
     <div className="flex flex-1 flex-col bg-gradient-to-b from-brand-50 via-white to-white">
       <main className="flex flex-1 items-center justify-center px-6 py-14">
