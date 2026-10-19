@@ -1,4 +1,10 @@
+"use client";
+
+import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
 import { GitHubMark } from "./brand";
+
+type Provider = "github" | "google";
 
 function GoogleMark({ className = "" }: { className?: string }) {
   return (
@@ -24,19 +30,65 @@ function GoogleMark({ className = "" }: { className?: string }) {
 }
 
 const buttonClass =
-  "inline-flex w-full items-center justify-center gap-2.5 border-2 border-ink bg-white px-4 py-3 font-mono text-xs font-bold uppercase tracking-wider shadow-brutal-sm transition-shadow hover:bg-brand-50 hover:shadow-brutal";
+  "inline-flex w-full items-center justify-center gap-2.5 border-2 border-ink bg-white px-4 py-3 font-mono text-xs font-bold uppercase tracking-wider shadow-brutal-sm transition-shadow hover:bg-brand-50 hover:shadow-brutal disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-white disabled:hover:shadow-brutal-sm";
 
 export function OAuthButtons() {
+  const [pending, setPending] = useState<Provider | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function continueWith(provider: Provider) {
+    setError(null);
+    setPending(provider);
+
+    try {
+      const { error: authError } = await authClient.signIn.social({
+        provider,
+        callbackURL: "/",
+      });
+
+      if (authError) {
+        throw new Error(authError.message);
+      }
+    } catch (cause) {
+      setError(
+        cause instanceof Error
+          ? cause.message
+          : "Could not start the sign in. Try again.",
+      );
+      setPending(null);
+    }
+  }
+
   return (
     <div className="grid gap-3">
-      <button type="button" className={buttonClass}>
+      <button
+        type="button"
+        onClick={() => continueWith("google")}
+        disabled={pending !== null}
+        className={buttonClass}
+      >
         <GoogleMark className="size-4" />
-        Continue with Google
+        {pending === "google" ? "Redirecting…" : "Continue with Google"}
       </button>
-      <button type="button" className={buttonClass}>
+
+      <button
+        type="button"
+        onClick={() => continueWith("github")}
+        disabled={pending !== null}
+        className={buttonClass}
+      >
         <GitHubMark className="size-4" />
-        Continue with GitHub
+        {pending === "github" ? "Redirecting…" : "Continue with GitHub"}
       </button>
+
+      {error ? (
+        <p
+          role="alert"
+          className="border-2 border-ink bg-brand-50 px-3 py-2 font-mono text-[11px] leading-5 text-ink/70"
+        >
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }
