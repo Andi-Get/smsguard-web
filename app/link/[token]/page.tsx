@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { db } from "@/prisma/db";
 import { parseTimestamp } from "@/lib/device-status";
 import { hashPairingToken, isPairingExpired } from "@/lib/pairing";
@@ -27,6 +28,9 @@ function formatExpiry(value: string) {
 }
 
 export default async function PairingLinkPage({ params }: PageProps) {
+  // The token is unique per request and the lookup hits Postgres, so this
+  // page renders at request time instead of being prerendered.
+  await connection();
   const { token } = await params;
   const validToken = token.length >= 20;
   const pairing = validToken
