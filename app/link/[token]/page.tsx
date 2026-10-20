@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { connection } from "next/server";
 import { db } from "@/prisma/db";
 import { parseTimestamp } from "@/lib/device-status";
@@ -13,7 +14,13 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-type PageProps = { params: Promise<{ token: string }> };
+/** Android applicationId the pairing deep link targets. */
+const APP_PACKAGE = process.env["NEXT_PUBLIC_APP_PACKAGE"] ?? "com.example.smsguard";
+
+type PageProps = {
+  params: Promise<{ token: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
 function formatExpiry(value: string) {
   const time = parseTimestamp(value);
@@ -27,11 +34,15 @@ function formatExpiry(value: string) {
   }).format(new Date(time));
 }
 
-export default async function PairingLinkPage({ params }: PageProps) {
+export default async function PairingLinkPage({
+  params,
+  searchParams,
+}: PageProps) {
   // The token is unique per request and the lookup hits Postgres, so this
   // page renders at request time instead of being prerendered.
   await connection();
   const { token } = await params;
+  const query = await searchParams;
   const validToken = token.length >= 20;
   const pairing = validToken
     ? await db.orm.public.DevicePairing.where({
@@ -48,7 +59,15 @@ export default async function PairingLinkPage({ params }: PageProps) {
     ? pairing.status !== "pending" || isPairingExpired(pairing.expiresAt)
     : true;
   const usable = Boolean(pairing && owner && !claimed && !expired);
-  const deepLink = `smsguard://pair?token=${encodeURIComponent(token)}`;
+
+  // Android resolves intent:// URIs natively: it opens the registered package
+  // when installed, or navigates to the fallback URL when it is not.
+  const requestHeaders = await headers();
+  const origin =
+    process.env["NEXT_PUBLIC_APP_URL"]?.trim().replace(/\/+$/, "") ??
+    `${requestHeaders.get("x-forwarded-proto") ?? "http"}://${requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host")}`;
+  const fallbackUrl = `${origin}/link/${encodeURIComponent(token)}?missing=1`;
+  const deepLink = `intent://pair?token=${encodeURIComponent(token)}#Intent;scheme=smsguard;package=${APP_PACKAGE};S.browser_fallback_url=${encodeURIComponent(fallbackUrl)};end`;
 
   return (
     <div className="flex flex-1 flex-col bg-gradient-to-b from-brand-50 via-white to-white">
@@ -149,6 +168,14 @@ export default async function PairingLinkPage({ params }: PageProps) {
                   >
                     Open SMSGuard app
                   </a>
+                ) : null}
+
+                {usable && typeof query["missing"] === "string" ? (
+                  <p className="mt-3 border-2 border-ink bg-brand-50 p-3 text-xs leading-5">
+                    The SMSGuard app does not seem to be installed on this
+                    phone. Install it, then come back here and tap the button
+                    again — this pairing code is still valid.
+                  </p>
                 ) : null}
 
                 <p className="mt-4 text-xs leading-5 text-ink/50">
