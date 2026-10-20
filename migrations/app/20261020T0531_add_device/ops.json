@@ -1,0 +1,368 @@
+[
+  {
+    "id": "table.device",
+    "label": "Create table \"device\"",
+    "summary": "Creates table \"device\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "device"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"device\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"device\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"device\"",
+        "sql": "CREATE TABLE \"public\".\"device\" (\n  \"appVersion\" text,\n  \"brand\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"deviceType\" text,\n  \"iccid\" text,\n  \"id\" text NOT NULL,\n  \"imei\" text NOT NULL,\n  \"imei2\" text,\n  \"imsi\" text,\n  \"isActive\" bool DEFAULT true NOT NULL,\n  \"lastSeenAt\" timestamptz,\n  \"manufacturer\" text,\n  \"meid\" text,\n  \"model\" text NOT NULL,\n  \"name\" text,\n  \"osVersion\" text,\n  \"phoneNumber\" text,\n  \"platform\" text,\n  \"serialNumber\" text,\n  \"status\" jsonb DEFAULT '{}'::jsonb NOT NULL,\n  \"updatedAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"userId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"device\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"device\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.device.device_serialNumber_key",
+    "label": "Add unique constraint on \"device\" (serialNumber)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "device_serialNumber_key",
+        "table": "device"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"device_serialNumber_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "device_serialNumber_key",
+          "public",
+          "\"public\".\"device\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"device_serialNumber_key\"",
+        "sql": "ALTER TABLE \"public\".\"device\" ADD CONSTRAINT \"device_serialNumber_key\" UNIQUE (\"serialNumber\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"device_serialNumber_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "device_serialNumber_key",
+          "public",
+          "\"public\".\"device\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.device.device_imei_key",
+    "label": "Add unique constraint on \"device\" (imei)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "device_imei_key",
+        "table": "device"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"device_imei_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "device_imei_key",
+          "public",
+          "\"public\".\"device\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"device_imei_key\"",
+        "sql": "ALTER TABLE \"public\".\"device\" ADD CONSTRAINT \"device_imei_key\" UNIQUE (\"imei\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"device_imei_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "device_imei_key",
+          "public",
+          "\"public\".\"device\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.device.device_imei2_key",
+    "label": "Add unique constraint on \"device\" (imei2)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "device_imei2_key",
+        "table": "device"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"device_imei2_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "device_imei2_key",
+          "public",
+          "\"public\".\"device\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"device_imei2_key\"",
+        "sql": "ALTER TABLE \"public\".\"device\" ADD CONSTRAINT \"device_imei2_key\" UNIQUE (\"imei2\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"device_imei2_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "device_imei2_key",
+          "public",
+          "\"public\".\"device\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.device.device_meid_key",
+    "label": "Add unique constraint on \"device\" (meid)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "device_meid_key",
+        "table": "device"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"device_meid_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "device_meid_key",
+          "public",
+          "\"public\".\"device\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"device_meid_key\"",
+        "sql": "ALTER TABLE \"public\".\"device\" ADD CONSTRAINT \"device_meid_key\" UNIQUE (\"meid\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"device_meid_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "device_meid_key",
+          "public",
+          "\"public\".\"device\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.device.device_brand_model_idx_3aabac73",
+    "label": "Create index \"device_brand_model_idx_3aabac73\" on \"device\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "device_brand_model_idx_3aabac73",
+        "table": "device"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"device_brand_model_idx_3aabac73\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"device_brand_model_idx_3aabac73\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"device_brand_model_idx_3aabac73\"",
+        "sql": "CREATE INDEX \"device_brand_model_idx_3aabac73\" ON \"public\".\"device\" (\"brand\", \"model\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"device_brand_model_idx_3aabac73\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"device_brand_model_idx_3aabac73\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.device.device_lastSeenAt_idx_b69845da",
+    "label": "Create index \"device_lastSeenAt_idx_b69845da\" on \"device\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "device_lastSeenAt_idx_b69845da",
+        "table": "device"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"device_lastSeenAt_idx_b69845da\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"device_lastSeenAt_idx_b69845da\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"device_lastSeenAt_idx_b69845da\"",
+        "sql": "CREATE INDEX \"device_lastSeenAt_idx_b69845da\" ON \"public\".\"device\" (\"lastSeenAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"device_lastSeenAt_idx_b69845da\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"device_lastSeenAt_idx_b69845da\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.device.device_userId_idx_a489d58a",
+    "label": "Create index \"device_userId_idx_a489d58a\" on \"device\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "device_userId_idx_a489d58a",
+        "table": "device"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"device_userId_idx_a489d58a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"device_userId_idx_a489d58a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"device_userId_idx_a489d58a\"",
+        "sql": "CREATE INDEX \"device_userId_idx_a489d58a\" ON \"public\".\"device\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"device_userId_idx_a489d58a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"device_userId_idx_a489d58a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.device.device_userId_fkey",
+    "label": "Add foreign key \"device_userId_fkey\" on \"device\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "device_userId_fkey",
+        "table": "device"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"device_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "device_userId_fkey",
+          "public",
+          "\"public\".\"device\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"device_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"device\"\nADD CONSTRAINT \"device_userId_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"user\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"device_userId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "device_userId_fkey",
+          "public",
+          "\"public\".\"device\""
+        ]
+      }
+    ]
+  }
+]

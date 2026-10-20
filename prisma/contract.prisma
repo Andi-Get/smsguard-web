@@ -11,6 +11,7 @@ model User {
 
   sessions Session[]
   accounts Account[]
+  devices  Device[]
 
   @@map("user")
 }
@@ -62,4 +63,59 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model Device {
+  id           String   @id @default(uuid())
+  name         String?
+  brand        String
+  model        String
+  manufacturer String?
+  deviceType   String?
+
+  // Hardware identifiers.
+  serialNumber String? @unique
+  imei         String  @unique
+  imei2        String? @unique
+  meid         String? @unique
+
+  // SIM and carrier details.
+  imsi        String?
+  iccid       String?
+  phoneNumber String?
+
+  // Software details.
+  platform   String?
+  osVersion  String?
+  appVersion String?
+
+  isActive Boolean @default(true)
+
+  // Volatile device state, written by the mobile agent. Stored as JSON because
+  // the shape changes between platforms and agent versions. Expected keys:
+  //   battery:         { level, charging, temperatureC, health }
+  //   location:        { latitude, longitude, accuracyM, altitudeM, speedMps,
+  //                      heading, provider, capturedAt }
+  //   connectedDevice: { name, type, macAddress, connectedAt }
+  //   network:         { type, carrier, signalStrength, roaming, ipAddress }
+  //   sim:             { slot, state, carrier, iccid, imsi, phoneNumber }
+  //   security:        { screenLocked, lockState, encryptionEnabled, rootDetected }
+  //   storage:         { totalBytes, usedBytes, freeBytes }
+  //   connectivity:    { wifiEnabled, bluetoothEnabled, mobileDataEnabled, airplaneMode }
+  //   app:             { version, lastSyncAt, uptimeSeconds }
+  //   lastUpdatedAt
+  status Jsonb @default(json`{}`)
+
+  lastSeenAt TimestamptzString?
+
+  createdAt TimestamptzString @default(now())
+  updatedAt TimestamptzString @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([brand, model])
+  @@index([lastSeenAt])
+  @@map("device")
 }
