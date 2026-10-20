@@ -16,7 +16,8 @@ export function DashboardNav() {
       {ITEMS.map((item) => {
         const active =
           item.href === "/dashboard"
-            ? pathname === "/dashboard"
+            ? pathname === "/dashboard" ||
+              pathname.startsWith("/dashboard/devices")
             : pathname.startsWith(item.href);
 
         return (
