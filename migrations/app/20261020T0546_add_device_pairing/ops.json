@@ -1,0 +1,287 @@
+[
+  {
+    "id": "table.device_pairing",
+    "label": "Create table \"device_pairing\"",
+    "summary": "Creates table \"device_pairing\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "device_pairing"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"device_pairing\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"device_pairing\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"device_pairing\"",
+        "sql": "CREATE TABLE \"public\".\"device_pairing\" (\n  \"claimedAt\" timestamptz,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"deviceId\" text,\n  \"expiresAt\" timestamptz NOT NULL,\n  \"id\" text NOT NULL,\n  \"status\" text DEFAULT 'pending' NOT NULL,\n  \"tokenHash\" text NOT NULL,\n  \"updatedAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"userId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"device_pairing\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"device_pairing\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.device_pairing.device_pairing_tokenHash_key",
+    "label": "Add unique constraint on \"device_pairing\" (tokenHash)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "device_pairing_tokenHash_key",
+        "table": "device_pairing"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"device_pairing_tokenHash_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "device_pairing_tokenHash_key",
+          "public",
+          "\"public\".\"device_pairing\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"device_pairing_tokenHash_key\"",
+        "sql": "ALTER TABLE \"public\".\"device_pairing\" ADD CONSTRAINT \"device_pairing_tokenHash_key\" UNIQUE (\"tokenHash\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"device_pairing_tokenHash_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "device_pairing_tokenHash_key",
+          "public",
+          "\"public\".\"device_pairing\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.device_pairing.device_pairing_deviceId_key",
+    "label": "Add unique constraint on \"device_pairing\" (deviceId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "device_pairing_deviceId_key",
+        "table": "device_pairing"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"device_pairing_deviceId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "device_pairing_deviceId_key",
+          "public",
+          "\"public\".\"device_pairing\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"device_pairing_deviceId_key\"",
+        "sql": "ALTER TABLE \"public\".\"device_pairing\" ADD CONSTRAINT \"device_pairing_deviceId_key\" UNIQUE (\"deviceId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"device_pairing_deviceId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "device_pairing_deviceId_key",
+          "public",
+          "\"public\".\"device_pairing\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.device_pairing.device_pairing_status_expiresAt_idx_c206f415",
+    "label": "Create index \"device_pairing_status_expiresAt_idx_c206f415\" on \"device_pairing\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "device_pairing_status_expiresAt_idx_c206f415",
+        "table": "device_pairing"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"device_pairing_status_expiresAt_idx_c206f415\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"device_pairing_status_expiresAt_idx_c206f415\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"device_pairing_status_expiresAt_idx_c206f415\"",
+        "sql": "CREATE INDEX \"device_pairing_status_expiresAt_idx_c206f415\" ON \"public\".\"device_pairing\" (\"status\", \"expiresAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"device_pairing_status_expiresAt_idx_c206f415\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"device_pairing_status_expiresAt_idx_c206f415\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.device_pairing.device_pairing_userId_idx_a489d58a",
+    "label": "Create index \"device_pairing_userId_idx_a489d58a\" on \"device_pairing\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "device_pairing_userId_idx_a489d58a",
+        "table": "device_pairing"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"device_pairing_userId_idx_a489d58a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"device_pairing_userId_idx_a489d58a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"device_pairing_userId_idx_a489d58a\"",
+        "sql": "CREATE INDEX \"device_pairing_userId_idx_a489d58a\" ON \"public\".\"device_pairing\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"device_pairing_userId_idx_a489d58a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"device_pairing_userId_idx_a489d58a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.device_pairing.device_pairing_userId_fkey",
+    "label": "Add foreign key \"device_pairing_userId_fkey\" on \"device_pairing\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "device_pairing_userId_fkey",
+        "table": "device_pairing"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"device_pairing_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "device_pairing_userId_fkey",
+          "public",
+          "\"public\".\"device_pairing\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"device_pairing_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"device_pairing\"\nADD CONSTRAINT \"device_pairing_userId_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"user\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"device_pairing_userId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "device_pairing_userId_fkey",
+          "public",
+          "\"public\".\"device_pairing\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.device_pairing.device_pairing_deviceId_fkey",
+    "label": "Add foreign key \"device_pairing_deviceId_fkey\" on \"device_pairing\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "device_pairing_deviceId_fkey",
+        "table": "device_pairing"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"device_pairing_deviceId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "device_pairing_deviceId_fkey",
+          "public",
+          "\"public\".\"device_pairing\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"device_pairing_deviceId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"device_pairing\"\nADD CONSTRAINT \"device_pairing_deviceId_fkey\"\nFOREIGN KEY (\"deviceId\")\nREFERENCES \"public\".\"device\" (\"id\")\nON DELETE SET NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"device_pairing_deviceId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "device_pairing_deviceId_fkey",
+          "public",
+          "\"public\".\"device_pairing\""
+        ]
+      }
+    ]
+  }
+]

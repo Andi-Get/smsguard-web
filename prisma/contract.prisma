@@ -9,9 +9,10 @@ model User {
   createdAt     TimestamptzString @default(now())
   updatedAt     TimestamptzString @default(now())
 
-  sessions Session[]
-  accounts Account[]
-  devices  Device[]
+  sessions       Session[]
+  accounts       Account[]
+  devices        Device[]
+  devicePairings DevicePairing[]
 
   @@map("user")
 }
@@ -114,8 +115,35 @@ model Device {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  pairing DevicePairing?
+
   @@index([userId])
   @@index([brand, model])
   @@index([lastSeenAt])
   @@map("device")
+}
+
+// A short-lived, single-use code that lets the mobile app attach a device to
+// the signed-in user. Only the SHA-256 hash of the token is stored; the raw
+// token lives in the QR code and the /link/<token> URL.
+model DevicePairing {
+  id        String @id @default(uuid())
+  tokenHash String @unique
+  status    String @default("pending")
+
+  expiresAt TimestamptzString
+  claimedAt TimestamptzString?
+
+  createdAt TimestamptzString @default(now())
+  updatedAt TimestamptzString @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  deviceId String? @unique
+  device   Device? @relation(fields: [deviceId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([status, expiresAt])
+  @@map("device_pairing")
 }
