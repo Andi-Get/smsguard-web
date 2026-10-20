@@ -1,139 +1,98 @@
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
 import { db } from "@/prisma/db";
-import { Logo, Wordmark } from "../_components/brand";
-import { SignOutButton } from "../_components/sign-out-button";
+import { isDeviceOnline } from "@/lib/device-status";
+import { requireUser } from "@/lib/session";
+import { AddDeviceDialog } from "./_components/add-device-dialog";
+import { DeviceCard } from "./_components/device-card";
 
-const PROVIDERS: Record<string, string> = {
-  github: "GitHub",
-  google: "Google",
-};
-
-// The session check reads request headers, so this route blocks until it can
-// resolve them instead of prerendering a static shell.
 export const instant = false;
 
-function formatTimestamp(value: string) {
-  const date = new Date(value.replace(" ", "T"));
-
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  return new Intl.DateTimeFormat("en", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(date);
-}
-
-function Field({
+function Summary({
   label,
   value,
-  mono = false,
 }: {
   label: string;
-  value: string;
-  mono?: boolean;
+  value: number;
 }) {
   return (
-    <div className="border-t-2 border-ink p-4 first:border-t-0 sm:border-t-0 sm:border-l-2 sm:first:border-l-0">
-      <dt className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink/45">
+    <div className="border-2 border-ink bg-white px-4 py-3 shadow-brutal-sm">
+      <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-ink/40">
         {label}
-      </dt>
-      <dd
-        className={`mt-1.5 text-sm ${mono ? "font-mono break-all" : ""}`}
-      >
-        {value}
-      </dd>
+      </p>
+      <p className="mt-1 text-xl font-bold">{value}</p>
     </div>
   );
 }
 
 export default async function DashboardPage() {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const user = await requireUser();
+  const devices = await db.orm.public.Device.where({ userId: user.id })
+    .orderBy((device) => device.createdAt.desc())
+    .all();
 
-  if (!session) {
-    redirect("/");
-  }
-
-  const user = await db.orm.public.User.first({ id: session.user.id });
-
-  if (!user) {
-    redirect("/");
-  }
-
-  const accounts = await db.orm.public.Account.where({ userId: user.id }).all();
-  const provider =
-    accounts.length > 0
-      ? (PROVIDERS[accounts[0].providerId] ?? accounts[0].providerId)
-      : "Unknown";
-  const initials = user.name.trim().slice(0, 1).toUpperCase() || "?";
+  const online = devices.filter(
+    (device) => device.isActive && isDeviceOnline(device.lastSeenAt),
+  ).length;
 
   return (
-    <div className="flex flex-1 flex-col bg-gradient-to-b from-brand-50 via-white to-white">
-      <header className="border-b-2 border-ink bg-white">
-        <div className="mx-auto flex w-full max-w-3xl items-center justify-between gap-4 px-6 py-4">
-          <div className="flex items-center gap-3">
-            <Logo className="size-8" />
-            <Wordmark />
-          </div>
-          <SignOutButton />
+    <>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-brand-700">
+            Your fleet
+          </p>
+          <h1 className="mt-1 text-2xl font-bold uppercase tracking-tight">
+            Devices
+          </h1>
+          <p className="mt-1 text-sm text-ink/55">
+            Pair a phone, then manage its location and status from the web.
+          </p>
         </div>
-      </header>
+        <AddDeviceDialog />
+      </div>
 
-      <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-12">
-        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-brand-700">
-          Signed in
-        </p>
-        <h1 className="mt-2 text-2xl font-bold uppercase tracking-tight">
-          Your account
-        </h1>
-        <p className="mt-2 max-w-lg text-sm leading-6 text-ink/60">
-          This is the record Better Auth saved in Postgres when you signed in.
-        </p>
+      <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-3">
+        <Summary label="Devices" value={devices.length} />
+        <Summary label="Online" value={online} />
+        <Summary label="Offline" value={devices.length - online} />
+      </div>
 
-        <section className="mt-8 border-2 border-ink bg-white shadow-brutal-lg">
-          <div className="flex items-center gap-4 border-b-2 border-ink p-6">
-            {user.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={user.image}
-                alt=""
-                className="size-14 border-2 border-ink object-cover"
+      {devices.length === 0 ? (
+        <section className="mt-6 border-2 border-dashed border-ink/30 bg-white/70 px-6 py-12 text-center">
+          <span className="mx-auto grid size-14 place-items-center border-2 border-ink bg-brand-50">
+            <svg viewBox="0 0 24 24" fill="none" className="size-6 text-brand-700">
+              <rect
+                x="6.5"
+                y="2.5"
+                width="11"
+                height="19"
+                rx="1.5"
+                stroke="currentColor"
+                strokeWidth="1.8"
               />
-            ) : (
-              <span className="grid size-14 place-items-center border-2 border-ink bg-brand-50 font-mono text-lg font-bold text-brand-700">
-                {initials}
-              </span>
-            )}
-            <div className="min-w-0">
-              <p className="truncate text-lg font-bold">{user.name}</p>
-              <p className="truncate text-sm text-ink/60">{user.email}</p>
-            </div>
+              <path
+                d="M10 5.5h4M11 18.5h2"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+              />
+            </svg>
+          </span>
+          <h2 className="mt-4 text-base font-bold">No devices yet</h2>
+          <p className="mx-auto mt-1 max-w-sm text-sm leading-6 text-ink/55">
+            Generate a secure pairing code, scan it with the SMSGuard mobile
+            app, and the phone will appear here.
+          </p>
+          <div className="mt-5 flex justify-center">
+            <AddDeviceDialog />
           </div>
-
-          <dl className="grid sm:grid-cols-2">
-            <Field label="User ID" value={user.id} mono />
-            <Field label="Provider" value={provider} />
-            <Field
-              label="Email verified"
-              value={user.emailVerified ? "Yes" : "No"}
-            />
-            <Field
-              label="Member since"
-              value={formatTimestamp(user.createdAt)}
-            />
-          </dl>
         </section>
-      </main>
-
-      <footer className="border-t-2 border-ink bg-white">
-        <div className="mx-auto flex w-full max-w-3xl items-center justify-between gap-4 px-6 py-5 font-mono text-[11px] uppercase tracking-wider text-ink/45">
-          <span>SMSGuard © 2026 · MIT</span>
-          <span>Postgres · Better Auth</span>
-        </div>
-      </footer>
-    </div>
+      ) : (
+        <section className="mt-6 grid gap-4 sm:grid-cols-2">
+          {devices.map((device) => (
+            <DeviceCard key={device.id} device={device} />
+          ))}
+        </section>
+      )}
+    </>
   );
 }
