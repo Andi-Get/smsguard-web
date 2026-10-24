@@ -86,3 +86,18 @@ Open your web browser and navigate to:
 [**http://localhost:3000**](http://localhost:3000)
 
 The page will auto-update as you edit files in the `app/` or `pages/` directory.
+
+## 🔄 How it Connects to the Mobile App
+The web portal is designed to complement the SMS-based nature of the mobile app. While the mobile app operates entirely offline via carrier SMS (no internet required), the web portal provides an online layer for community-driven lost-and-found reporting and device management.
+
+## ⚠️ Limitations & Future Work
+Currently, the platform is expanding from a front-end demonstration to a full-stack application. Future roadmap includes:
+* **Automated Locate Requests:** Connecting the web dashboard to a backend that can trigger SMS locate requests directly to a lost phone and display the GPS reply on a web map.
+* **User Authentication:** Allowing owners to create secure accounts to manage multiple devices and view location history.
+* **Replay Protection:** Integrating secure one-time tokens with the mobile app.
+
+## 👥 The Team
+SMSGuard is built by a team of six, organized in three pairs:
+* **Developers & AI Promoters (2):** Implement the Android app and the website.
+* **Feature & Security Logic Leads (2):** Design command handling, authentication, and anti-tamper behavior.
+* **UI & Documentation Leads (2):** Design the interface and write project documentation.
