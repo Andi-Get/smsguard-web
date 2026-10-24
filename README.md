@@ -14,3 +14,20 @@ The web dashboard serves as a management portal and a lost-and-found lookup syst
 
 ## 🔗 Related Repositories
 * **Android App:** [smsgward-org/smsgward](https://github.com/smsgward-org/smsgward)
+## 🛠️ Technology Stack
+
+This project is built using a modern web stack to ensure fast performance and reliable data handling:
+* **Framework:** [Next.js](https://nextjs.org/) (React framework)
+* **Database / ORM:** [Prisma](https://www.prisma.io/) for database schema, migrations, and querying.
+* **Styling:** (Add Tailwind CSS or your styling method here if applicable)
+* **Deployment:** Hosted on [Vercel](https://vercel.com/)
+* **Live Demo:** [smsgward-web.vercel.app](https://smsgward-web.vercel.app/)
+
+## 🚀 Getting Started (Local Development)
+
+To run this web dashboard locally, follow these steps:
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/smsgward-org/smsgward-web.git
+   cd smsguard-web
