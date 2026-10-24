@@ -25,9 +25,64 @@ This project is built using a modern web stack to ensure fast performance and re
 
 ## 🚀 Getting Started (Local Development)
 
-To run this web dashboard locally, follow these steps:
+## 📋 Prerequisites
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/smsgward-org/smsgward-web.git
-   cd smsguard-web
+Before you begin, ensure you have the following installed on your computer:
+
+- **Node.js:** Version 18.17 or later. ([Download Node.js](https://nodejs.org/))
+- **Git:** For cloning the repository. ([Download Git](https://git-scm.com/))
+- **Package Manager:** `npm` (comes with Node.js) or `yarn` / `pnpm`.
+- **Database:** A local database running (e.g., PostgreSQL) or SQLite if configured in the Prisma schema.
+
+To run this web dashboard locally, follow these steps: 
+
+## 🚀 Step-by-Step Setup
+
+### 1. Clone the Repository
+
+Clone the project to your local machine and navigate into the directory:
+
+```bash
+git clone https://github.com/smsgward-org/smsgward-web.git
+cd smsguard-web
+```
+
+### 2. Set Up Environment Variables
+
+Copy the example environment file to create your local `.env` file:
+
+```bash
+cp .env.example .env
+```
+
+Open the newly created `.env` file in your code editor. You **must** update the `DATABASE_URL` with your local database credentials. For example:
+
+- **PostgreSQL:** `DATABASE_URL="postgresql://user:password@localhost:5432/smsguard?schema=public"`
+- **SQLite:** `DATABASE_URL="file:./dev.db"`
+
+### 3. Initialize the Database (Prisma)
+
+Run the following commands to generate the Prisma Client and apply the database schema (create the necessary tables):
+
+```bash
+npx prisma generate
+npx prisma migrate dev --name init
+```
+
+*Note: If you are using a fresh SQLite database, this will create the `dev.db` file automatically.*
+
+### 4. Start the Development Server
+
+Now you are ready to start the Next.js development server:
+
+```bash
+npm run dev
+```
+
+### 5. View the Website
+
+Open your web browser and navigate to:
+
+[**http://localhost:3000**](http://localhost:3000)
+
+The page will auto-update as you edit files in the `app/` or `pages/` directory.
