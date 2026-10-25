@@ -12,6 +12,18 @@ The web dashboard serves as a management portal and a lost-and-found lookup syst
 * **Deep Linking:** Seamlessly opens the mobile app via Android intent deep links (`smsgward://`) for device pairing.
 * **Setup Guide:** Step-by-step instructions for installing the Android app and utilizing the web portal.
 
+## 📸 Web Dashboard Screenshots
+
+Here is a glimpse of the SMSGuard Web Dashboard interface:
+
+| Secure Authentication | Main Dashboard (Empty State) |
+| :---: | :---: |
+| <img src="assets/login.png" width="450" alt="Login Screen"/> | <img src="assets/dashboard.png" width="450" alt="Main Dashboard"/> |
+
+| Device Pairing (QR Code) | Account Settings |
+| :---: | :---: |
+| <img src="assets/pairing.png" width="450" alt="Device Pairing"/> | <img src="assets/settings.png" width="450" alt="Account Settings"/> |
+
 ## 🔗 Related Repositories
 * **Android App:** [smsgward-org/smsgward](https://github.com/smsgward-org/smsgward)
 ## 🛠️ Technology Stack
