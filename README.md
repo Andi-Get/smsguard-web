@@ -1,36 +1,103 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SMSGuard Web Dashboard
 
-## Getting Started
+This repository contains the companion web application for **SMSGuard**, an offline-first Android app designed to help users find, alarm, and lock lost or stolen phones via SMS commands. 
 
-First, run the development server:
+The web dashboard serves as a management portal and a lost-and-found lookup system, bridging the gap between the mobile app and the web.
+
+## ✨ Features
+
+* **Home:** Introduces the SMSGuard ecosystem and its core offline security features.
+* **Lost & Found Registry:** Allows owners to report a device as lost using its IMEI, model, and a contact method. Anyone can query the database to check the status of an IMEI.
+* **Device Dashboard:** A centralized hub showing counts of registered, lost, and recovered devices. Users can easily mark a device as safe or lost.
+* **Deep Linking:** Seamlessly opens the mobile app via Android intent deep links (`smsgward://`) for device pairing.
+* **Setup Guide:** Step-by-step instructions for installing the Android app and utilizing the web portal.
+
+## 🔗 Related Repositories
+* **Android App:** [smsgward-org/smsgward](https://github.com/smsgward-org/smsgward)
+## 🛠️ Technology Stack
+
+This project is built using a modern web stack to ensure fast performance and reliable data handling:
+* **Framework:** [Next.js](https://nextjs.org/) (React framework)
+* **Database / ORM:** [Prisma](https://www.prisma.io/) for database schema, migrations, and querying.
+* **Styling:** (Add Tailwind CSS or your styling method here if applicable)
+* **Deployment:** Hosted on [Vercel](https://vercel.com/)
+* **Live Demo:** [smsgward-web.vercel.app](https://smsgward-web.vercel.app/)
+
+## 🚀 Getting Started (Local Development)
+
+## 📋 Prerequisites
+
+Before you begin, ensure you have the following installed on your computer:
+
+- **Node.js:** Version 18.17 or later. ([Download Node.js](https://nodejs.org/))
+- **Git:** For cloning the repository. ([Download Git](https://git-scm.com/))
+- **Package Manager:** `npm` (comes with Node.js) or `yarn` / `pnpm`.
+- **Database:** A local database running (e.g., PostgreSQL) or SQLite if configured in the Prisma schema.
+
+To run this web dashboard locally, follow these steps: 
+
+## 🚀 Step-by-Step Setup
+
+### 1. Clone the Repository
+
+Clone the project to your local machine and navigate into the directory:
+
+```bash
+git clone https://github.com/smsgward-org/smsgward-web.git
+cd smsguard-web
+```
+
+### 2. Set Up Environment Variables
+
+Copy the example environment file to create your local `.env` file:
+
+```bash
+cp .env.example .env
+```
+
+Open the newly created `.env` file in your code editor. You **must** update the `DATABASE_URL` with your local database credentials. For example:
+
+- **PostgreSQL:** `DATABASE_URL="postgresql://user:password@localhost:5432/smsguard?schema=public"`
+- **SQLite:** `DATABASE_URL="file:./dev.db"`
+
+### 3. Initialize the Database (Prisma)
+
+Run the following commands to generate the Prisma Client and apply the database schema (create the necessary tables):
+
+```bash
+npx prisma generate
+npx prisma migrate dev --name init
+```
+
+*Note: If you are using a fresh SQLite database, this will create the `dev.db` file automatically.*
+
+### 4. Start the Development Server
+
+Now you are ready to start the Next.js development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 5. View the Website
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Open your web browser and navigate to:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+[**http://localhost:3000**](http://localhost:3000)
 
-## Learn More
+The page will auto-update as you edit files in the `app/` or `pages/` directory.
 
-To learn more about Next.js, take a look at the following resources:
+## 🔄 How it Connects to the Mobile App
+The web portal is designed to complement the SMS-based nature of the mobile app. While the mobile app operates entirely offline via carrier SMS (no internet required), the web portal provides an online layer for community-driven lost-and-found reporting and device management.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## ⚠️ Limitations & Future Work
+Currently, the platform is expanding from a front-end demonstration to a full-stack application. Future roadmap includes:
+* **Automated Locate Requests:** Connecting the web dashboard to a backend that can trigger SMS locate requests directly to a lost phone and display the GPS reply on a web map.
+* **User Authentication:** Allowing owners to create secure accounts to manage multiple devices and view location history.
+* **Replay Protection:** Integrating secure one-time tokens with the mobile app.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 👥 The Team
+SMSGuard is built by a team of six, organized in three pairs:
+* **Developers & AI Promoters (2):** Implement the Android app and the website.
+* **Feature & Security Logic Leads (2):** Design command handling, authentication, and anti-tamper behavior.
+* **UI & Documentation Leads (2):** Design the interface and write project documentation.
